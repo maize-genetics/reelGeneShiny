@@ -35,4 +35,4 @@ RUN Rscript -e 'remotes::install_github("nvelden/NGLVieweR")'
 # Run rootless
 USER shiny
 
-CMD ["Rscript", "/reelgene/app.R"]
+CMD ["Rscript", "/reelgene/reelgene.R"]
