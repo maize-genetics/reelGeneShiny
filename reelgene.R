@@ -175,6 +175,47 @@ ui <- fluidPage(
                    )
                  )
         ),
+        tabPanel(
+          "Sequence",
+          sidebarPanel(
+            selectInput(
+              "seq_choices",
+              "Transcript:",
+              choices = "",
+              selected = "Unselected",
+              multiple = FALSE,
+              selectize = FALSE,
+              width = NULL,
+              size = NULL
+            ),
+            selectInput(
+              "seqtype",
+              "Sequence Type:",
+              choices = c("Unselected", "cdna", "peptide", "3utr", "5utr", "gene_exon", "transcript_exon",
+                          "transcript_exon_intron", "gene_exon_intron", "coding", "coding_transcript_flank",
+                          "coding_gene_flank", "transcript_flank", "gene_flank"),
+              selected = "Unselected",
+              multiple = FALSE,
+              selectize = FALSE,
+              width = NULL,
+              size = NULL
+            )
+          ),
+          mainPanel(
+            width = 12,
+            h4("Sequence"),
+            conditionalPanel(
+              condition = "input.lookup > 0",
+              withSpinner(
+                tags$div(
+                  style = "max-width: 100%; word-wrap: break-word;",
+                  textOutput("sequence")
+                ),
+                color = "gold"
+              )
+            )
+          )
+        ),
         tabPanel("Protein Structure",
                  fluidRow(
                    column(width = 12,
@@ -428,7 +469,7 @@ server <- function(input, output, session) {
     # Generate a list of choices for the selectInput
     transcript_choices <- c("Unselected")
     if (nrow(transcript_df) > 0) {
-      transcript_choices <- c("Unselected", setNames(paste0("data/msas/panand/B73_MSAs_padded10_rc/", transcript_df$Transcript, "_msa_padded10N_rc.fa"), transcript_df$Transcript))
+      transcript_choices <- c("Unselected", setNames(paste0("data/msas/panand/", transcript_df$Transcript, "_msa_padded10N_rc.fa"), transcript_df$Transcript))
     }
     
     # Update the choices of the selectInput for "Transcript"
@@ -518,7 +559,7 @@ server <- function(input, output, session) {
     # Generate a list of choices for the selectInput
     transcript_choices_NAM <- c("Unselected")
     if (nrow(transcript_df) > 0) {
-      transcript_choices_NAM <- c("Unselected", setNames(paste0("data/msas/nam/MSA/", transcript_df$Transcript, "_msa.fastA"), transcript_df$Transcript))
+      transcript_choices_NAM <- c("Unselected", setNames(paste0("data/msas/nam/", transcript_df$Transcript, "_msa.fastA"), transcript_df$Transcript))
     }
     
     # Update the choices of the selectInput for "Transcript"
@@ -564,17 +605,44 @@ server <- function(input, output, session) {
                 legend.title = element_text(size = 12)) 
       }
     })
+
+    # Generate a list of choices for the selectInput
+    seq_choices <- c("Unselected")
+    if (nrow(transcript_df) > 0) {
+      seq_choices <- c("Unselected",
+          setNames(transcript_df$Transcript, transcript_df$Transcript
+          ))
+    }
     
+    # OUTPUT SEQUENCE DATA
+    # Update the choices of the selectInput for "Sequence"
+    updateSelectInput(
+      session = session,
+      inputId = "seq_choices",
+      label = "Transcript:",
+      choices = seq_choices,
+      selected = "Unselected"
+    )
     
-    
-    
+    # render the sequence output
+    output$sequence <- renderText({
+      if (input$seq_choices != "Unselected" && input$seqtype != "Unselected") {
+        if (interactive()) {
+          maize_mart <- useMart(biomart = "plants_mart", host = "https://plants.ensembl.org", dataset = "zmays_eg_gene")
+          maize_mart@biomart <- 'ENSEMBL_MART_ENSEMBL'
+          seq <- getSequence(id = input$seq_choices, mart = maize_mart, seqType = input$seqtype, type = "ensembl_transcript_id")
+          paste(seq)
+        }
+      }
+    })
+
     ######### Output protein plots
     # Generate a list of choices for the selectInput
     isoform_choices <- c("Unselected")
     if (nrow(transcript_df) > 0) {
       df_modified <- transcript_df %>%
         mutate(across('Transcript', str_replace, '_T', '_P'))
-      isoform_choices <- c("Unselected", setNames(paste0("data/proteinStructure/Zm-B73-REFERENCE-NAM-5.0_Zm00001eb.1.protein.aa/", df_modified$Transcript, ".pdb"), df_modified$Transcript))
+      isoform_choices <- c("Unselected", setNames(paste0("data/proteinStructure/", df_modified$Transcript, ".pdb"), df_modified$Transcript))
     }
     
     # Update the choices of the selectInput for "Transcript"
