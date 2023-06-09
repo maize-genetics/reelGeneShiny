@@ -35,7 +35,8 @@ ui <- fluidPage(
       textInput("geneID", "Enter Gene ID:", placeholder = "Gene ID"),
       actionButton("lookup", "Lookup"),
       # Add tableOutput for gene data
-      tableOutput("geneData")
+      tableOutput("geneData"),
+      uiOutput("maizeGDB")
     ),
     mainPanel(
       width = 12,
@@ -664,9 +665,14 @@ server <- function(input, output, session) {
         viewer
       }
     })
-    
-    
-    
+
+    ### MaizeGDB link
+    gene_id <- isolate(input$geneID)
+    output$maizeGDB <- renderUI({
+      link <- paste0("https://www.maizegdb.org/gene_center/gene/", gene_id)
+      tags$a(href = link, "MaizeGDB Link")
+    })
+
   })
 }
 
