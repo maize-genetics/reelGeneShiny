@@ -438,7 +438,7 @@ server <- function(input, output, session) {
       # Create the scatter plot with red points for the gene of interest
       
       workingMatrix <- transcriptMatrix %>% filter(Gene == gene_id)
-      meltedMatrix <- melt(workingMatrix[, c(1:5, 11:14)], id.vars = c(1:5))
+      meltedMatrix <- melt(workingMatrix[, c(1:6, 11:14)], id.vars = c(1:5))
       meltedMatrix$value[meltedMatrix$value == -1] <- NA
       meltedMatrix$scale <- ifelse(substr(meltedMatrix$feature, 1, 1) == "C", 14, ifelse(substr(meltedMatrix$feature, 1, 1) == "I", 2, 6))
       
