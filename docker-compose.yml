@@ -1,0 +1,42 @@
+version: '3.9'
+services:
+  reelgene_shiny1:
+    container_name: reelgene_1
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./:/reelgene
+    environment:
+      - REELGENE_DOCKER=1
+    ports:
+      - 127.0.0.1:8001:8000
+  reelgene_shiny2:
+    container_name: reelgene_2
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./:/reelgene
+    environment:
+      - REELGENE_DOCKER=2
+    ports:
+      - 127.0.0.1:8002:8000
+  reelgene_shiny3:
+    container_name: reelgene_3
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./:/reelgene
+    environment:
+      - REELGENE_DOCKER=3
+    ports:
+      - 127.0.0.1:8003:8000
+  reelgene_shiny4:
+    container_name: reelgene_4
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./:/reelgene
+    environment:
+      - REELGENE_DOCKER=4
+    ports:
+      - 127.0.0.1:8004:8000

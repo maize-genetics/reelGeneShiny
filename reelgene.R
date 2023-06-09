@@ -14,12 +14,17 @@ library(stringr)
 library(NGLVieweR)
 library(bio3d)
 
+# Environment variable associated with the container
+# Set working directory to Docker path if it's set
+docker <- Sys.getenv("REELGENE_DOCKER")
+in_docker <- if (docker != "") TRUE else FALSE
+if (in_docker) setwd("/reelgene")
+
 # Sample data frame with GeneID, PanGeneID, Taxa, and Value columns
-df <- read.csv('shiny/reelGene_allNAM_withConservation.csv')
+df <- read.csv('reelGene_allNAM_withConservation.csv')
 #df <- reelGene
 im <- initInterMine(mine=listMines()["MaizeMine"])
-transcriptMatrix <- read.csv('shiny/data/inputMatrix/formatted_LSTM_metaTab_B73.txt')
-docker <- Sys.getenv("REELGENE_DOCKER")
+transcriptMatrix <- read.csv('data/inputMatrix/formatted_LSTM_metaTab_B73.txt')
 
 # Define UI
 ui <- fluidPage(
@@ -199,7 +204,7 @@ ui <- fluidPage(
     )
   )
 ),
-tags$footer(paste0("Container: ", if (docker != "") docker else "?"))
+tags$footer(paste0("Container: ", if (in_docker) docker else "?"))
 )
 
 
@@ -423,7 +428,7 @@ server <- function(input, output, session) {
     # Generate a list of choices for the selectInput
     transcript_choices <- c("Unselected")
     if (nrow(transcript_df) > 0) {
-      transcript_choices <- c("Unselected", setNames(paste0("shiny/data/msas/panand/B73_MSAs_padded10_rc/", transcript_df$Transcript, "_msa_padded10N_rc.fa"), transcript_df$Transcript))
+      transcript_choices <- c("Unselected", setNames(paste0("data/msas/panand/B73_MSAs_padded10_rc/", transcript_df$Transcript, "_msa_padded10N_rc.fa"), transcript_df$Transcript))
     }
     
     # Update the choices of the selectInput for "Transcript"
@@ -513,7 +518,7 @@ server <- function(input, output, session) {
     # Generate a list of choices for the selectInput
     transcript_choices_NAM <- c("Unselected")
     if (nrow(transcript_df) > 0) {
-      transcript_choices_NAM <- c("Unselected", setNames(paste0("shiny/data/msas/nam/MSA/", transcript_df$Transcript, "_msa.fastA"), transcript_df$Transcript))
+      transcript_choices_NAM <- c("Unselected", setNames(paste0("data/msas/nam/MSA/", transcript_df$Transcript, "_msa.fastA"), transcript_df$Transcript))
     }
     
     # Update the choices of the selectInput for "Transcript"
@@ -569,7 +574,7 @@ server <- function(input, output, session) {
     if (nrow(transcript_df) > 0) {
       df_modified <- transcript_df %>%
         mutate(across('Transcript', str_replace, '_T', '_P'))
-      isoform_choices <- c("Unselected", setNames(paste0("shiny/data/proteinStructure/Zm-B73-REFERENCE-NAM-5.0_Zm00001eb.1.protein.aa/", df_modified$Transcript, ".pdb"), df_modified$Transcript))
+      isoform_choices <- c("Unselected", setNames(paste0("data/proteinStructure/Zm-B73-REFERENCE-NAM-5.0_Zm00001eb.1.protein.aa/", df_modified$Transcript, ".pdb"), df_modified$Transcript))
     }
     
     # Update the choices of the selectInput for "Transcript"
@@ -597,7 +602,7 @@ server <- function(input, output, session) {
   })
 }
 
-options(shiny.host = '127.0.0.1')
+options(shiny.host = if (in_docker) '0.0.0.0' else '127.0.0.1')
 options(shiny.port = 8000)
 
 # Run the app
