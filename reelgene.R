@@ -13,6 +13,7 @@ library(reshape2)
 library(stringr)
 library(NGLVieweR)
 library(bio3d)
+library(biomaRt)
 
 # Environment variable associated with the container
 # Set working directory to Docker path if it's set
