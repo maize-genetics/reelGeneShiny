@@ -629,12 +629,10 @@ server <- function(input, output, session) {
     # render the sequence output
     output$sequence <- renderText({
       if (input$seq_choices != "Unselected" && input$seqtype != "Unselected") {
-        if (interactive()) {
           maize_mart <- useMart(biomart = "plants_mart", host = "https://plants.ensembl.org", dataset = "zmays_eg_gene")
           maize_mart@biomart <- 'ENSEMBL_MART_ENSEMBL'
           seq <- getSequence(id = input$seq_choices, mart = maize_mart, seqType = input$seqtype, type = "ensembl_transcript_id")
           paste(seq)
-        }
       }
     })
 
