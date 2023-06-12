@@ -1,0 +1,27 @@
+[frontends.reelgene]
+backend = "reelgene_shiny"
+passHostHeader = true
+
+[frontends.reelgene.auth.basic]
+users = [
+	"cerca:<hashed password here>"
+]
+
+[frontends.reelgene.routes.shiny]
+rule = "Host:reelgene.maizegenetics.net"
+
+[backends.reelgene_shiny.servers.server1]
+url = "http://127.0.0.1:8001"
+weight = 1
+
+[backends.reelgene_shiny.servers.server2]
+url = "http://127.0.0.1:8002"
+weight = 1
+
+[backends.reelgene_shiny.servers.server3]
+url = "http://127.0.0.1:8003"
+weight = 1
+
+[backends.reelgene_shiny.servers.server4]
+url = "http://127.0.0.1:8004"
+weight = 1
