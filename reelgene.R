@@ -15,6 +15,8 @@ library(NGLVieweR)
 library(bio3d)
 library(biomaRt)
 
+addResourcePath("static", "www")
+
 # Environment variable associated with the container
 # Set working directory to Docker path if it's set
 docker <- Sys.getenv("REELGENE_DOCKER")
@@ -30,7 +32,7 @@ transcriptMatrix <- read.csv('data/inputMatrix/formatted_LSTM_metaTab_B73.txt')
 # Define UI
 ui <- fluidPage(
   tags$head(
-    tags$link(rel = "stylesheet", type = "text/css", href = "reelgene.css")
+    tags$link(rel = "stylesheet", type = "text/css", href = "static/reelgene.css")
   ),
   titlePanel("Gene ID Lookup"),
   sidebarLayout(
