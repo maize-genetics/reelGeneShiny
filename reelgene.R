@@ -15,13 +15,12 @@ library(NGLVieweR)
 library(bio3d)
 library(biomaRt)
 
-addResourcePath("static", "www")
-
 # Environment variable associated with the container
 # Set working directory to Docker path if it's set
 docker <- Sys.getenv("REELGENE_DOCKER")
 in_docker <- if (docker != "") TRUE else FALSE
 if (in_docker) setwd("/reelgene")
+addResourcePath("static", if (in_docker) "/reelgene/www" else "www")
 
 # Sample data frame with GeneID, PanGeneID, Taxa, and Value columns
 df <- read.csv('data/reelGene_allNAM_withConservation.csv')
