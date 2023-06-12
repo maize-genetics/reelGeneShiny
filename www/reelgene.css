@@ -1,0 +1,4 @@
+/* We use the !important rule in order to override the inline style on the <canvas> element */
+#protein_viewer canvas {
+    background-color: rgba(0, 0, 0, 0) !important;
+}

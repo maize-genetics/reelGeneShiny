@@ -29,6 +29,9 @@ transcriptMatrix <- read.csv('data/inputMatrix/formatted_LSTM_metaTab_B73.txt')
 
 # Define UI
 ui <- fluidPage(
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "reelgene.css")
+  ),
   titlePanel("Gene ID Lookup"),
   sidebarLayout(
     sidebarPanel(
