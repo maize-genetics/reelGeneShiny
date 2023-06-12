@@ -213,10 +213,7 @@ ui <- fluidPage(
             conditionalPanel(
               condition = "input.lookup > 0",
               withSpinner(
-                tags$div(
-                  style = "max-width: 100%; word-wrap: break-word;",
-                  textOutput("sequence")
-                ),
+                textOutput("sequence"),
                 color = "gold"
               )
             )

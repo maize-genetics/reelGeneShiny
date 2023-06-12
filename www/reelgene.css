@@ -2,3 +2,8 @@
 #protein_viewer canvas {
     background-color: rgba(0, 0, 0, 0) !important;
 }
+#sequence {
+    max-width: 100%;
+    word-wrap: break-word;
+    min-height: 200px;
+}
