@@ -21,7 +21,7 @@ in_docker <- if (docker != "") TRUE else FALSE
 if (in_docker) setwd("/reelgene")
 
 # Sample data frame with GeneID, PanGeneID, Taxa, and Value columns
-df <- read.csv('reelGene_allNAM_withConservation.csv')
+df <- read.csv('data/reelGene_allNAM_withConservation.csv')
 #df <- reelGene
 im <- initInterMine(mine=listMines()["MaizeMine"])
 transcriptMatrix <- read.csv('data/inputMatrix/formatted_LSTM_metaTab_B73.txt')
