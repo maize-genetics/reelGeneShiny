@@ -590,7 +590,7 @@ server <- function(input, output, session) {
     
     # Render the MSA viewer
     output$msa_viewer_NAM <- renderMsaR({
-      msaR(menu = TRUE, msa_data_NAM(), seqlogo = FALSE, alignmentHeight = 550, conservation = TRUE, labelNameLength = 160)
+      msaR(menu = TRUE, msa_data_NAM(), seqlogo = FALSE, alignmentHeight = 550, conservation = TRUE)
     })
     
     # Render the tree viewer

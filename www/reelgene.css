@@ -7,3 +7,6 @@
     word-wrap: break-word;
     min-height: 200px;
 }
+.biojs_msa_labels {
+    width: fit-content !important;
+}
