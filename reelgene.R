@@ -500,22 +500,22 @@ server <- function(input, output, session) {
       if (is.null(sequence_names) || sequence_names == "Unselected") {
         return(msa_data())
       } else if (sequence_names == "Long Reads") {
-        pattern <- "^..-|^(B73)"
+        pattern <- "(Long)|^(B73)"
         list <- names(msa_data())[grepl(pattern, names(msa_data()), ignore.case = FALSE)]
         filtered_msa_data <- subset(msa_data(), names(msa_data()) %in% list)
         return(filtered_msa_data)
       } else if (sequence_names == "Short Reads") {
-        pattern <- c("^..-", "^Z", "^Td")
-        list <- names(msa_data())[!grepl(paste(pattern, collapse = "|"), names(msa_data()), ignore.case = FALSE)]
+        pattern <- "(Short)|^(B73)"
+        list <- names(msa_data())[grepl(pattern, names(msa_data()), ignore.case = FALSE)]
         filtered_msa_data <- subset(msa_data(), names(msa_data()) %in% list)
         return(filtered_msa_data)
       } else if (sequence_names == "Zea") {
-        pattern <- "^Z|^(B73)"
+        pattern <- "^Zea|^(B73)"
         list <- names(msa_data())[grepl(pattern, names(msa_data()), ignore.case = FALSE)]
         filtered_msa_data <- subset(msa_data(), names(msa_data()) %in% list)
         return(filtered_msa_data)
       } else if (sequence_names == "Zea & Tripsacum") {
-        pattern <- "^Td|^(B73)|^Z"
+        pattern <- "^Tripsacum|^(B73)|^Zea"
         list <- names(msa_data())[grepl(pattern, names(msa_data()), ignore.case = FALSE)]
         filtered_msa_data <- subset(msa_data(), names(msa_data()) %in% list)
         return(filtered_msa_data)
@@ -590,7 +590,7 @@ server <- function(input, output, session) {
     
     # Render the MSA viewer
     output$msa_viewer_NAM <- renderMsaR({
-      msaR(menu = TRUE, msa_data_NAM(), seqlogo = FALSE, alignmentHeight = 550, conservation = TRUE)
+      msaR(menu = TRUE, msa_data_NAM(), seqlogo = FALSE, alignmentHeight = 550, conservation = TRUE, labelNameLength = 160)
     })
     
     # Render the tree viewer
