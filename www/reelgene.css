@@ -10,3 +10,6 @@
 .biojs_msa_labels {
     width: fit-content !important;
 }
+.biojs_msa_labelrow {
+    border-bottom: 1px solid lightgray;
+}
