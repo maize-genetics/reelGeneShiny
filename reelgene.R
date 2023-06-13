@@ -248,7 +248,8 @@ ui <- fluidPage(
     )
   )
 ),
-tags$footer(paste0("Container: ", if (in_docker) docker else "?"))
+# TODO: This won't work without swarm when using replicas
+#tags$footer(paste0("Container: ", if (in_docker) docker else "?"))
 )
 
 
