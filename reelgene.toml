@@ -10,6 +10,9 @@ users = [
 [frontends.reelgene.routes.shiny]
 rule = "Host:reelgene.maizegenetics.net"
 
+# Uncomment to enable sticky sessions
+#[backends.reelgene_shiny.loadbalancer.stickiness]
+
 [backends.reelgene_shiny.servers.server1]
 url = "http://127.0.0.1:8001"
 weight = 1
