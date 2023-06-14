@@ -29,6 +29,7 @@ RUN Rscript -e 'install.packages("ape")'
 RUN Rscript -e 'install.packages("reshape2")'
 RUN Rscript -e 'install.packages("remotes")'
 RUN Rscript -e 'install.packages("bio3d", dependencies=TRUE)'
+RUN Rscript -e 'install.packages("stevedore")'
 
 RUN Rscript -e 'remotes::install_github("nvelden/NGLVieweR")'
 

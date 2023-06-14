@@ -14,12 +14,20 @@ library(stringr)
 library(NGLVieweR)
 library(bio3d)
 library(biomaRt)
+library(stevedore)
 
-# Environment variable associated with the container
-# Set working directory to Docker path if it's set
-docker <- Sys.getenv("REELGENE_DOCKER")
-in_docker <- if (docker != "") TRUE else FALSE
-if (in_docker) setwd("/reelgene")
+reelgene_docker <- Sys.getenv("REELGENE_DOCKER")
+in_docker <- if (reelgene_docker != "") TRUE else FALSE
+if (in_docker) {
+  setwd("/reelgene")
+  # Use Docker API socket mounted in container to retrieve container's name
+  # to include in footer for debugging replicas
+  docker_api <- stevedore::docker_client()
+  container_hostname <- Sys.getenv("HOSTNAME")
+  container_ids <- docker_api$container$list()$id
+  our_container_index <- grep(container_hostname, container_ids)
+  container_name <- docker_api$container$list()$name[our_container_index]
+}
 addResourcePath("static", if (in_docker) "/reelgene/www" else "www")
 
 # Sample data frame with GeneID, PanGeneID, Taxa, and Value columns
@@ -248,8 +256,7 @@ ui <- fluidPage(
     )
   )
 ),
-# TODO: This won't work without swarm when using replicas
-#tags$footer(paste0("Container: ", if (in_docker) docker else "?"))
+tags$footer(paste0("Container: ", if (in_docker) container_name else "?"))
 )
 
 

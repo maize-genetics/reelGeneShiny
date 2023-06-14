@@ -7,6 +7,8 @@ services:
       replicas: 4
     volumes:
       - ./:/reelgene
+      # export USER_ID=$(id -u)
+      - "/run/user/${USER_ID}/docker.sock:/var/run/docker.sock"
     environment:
       - REELGENE_DOCKER=1
     ports:
