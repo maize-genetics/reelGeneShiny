@@ -16,6 +16,7 @@ library(bio3d)
 library(biomaRt)
 library(stevedore)
 
+
 reelgene_docker <- Sys.getenv("REELGENE_DOCKER")
 in_docker <- if (reelgene_docker != "") TRUE else FALSE
 if (in_docker) {
@@ -36,16 +37,15 @@ df <- read.csv('data/reelGene_allNAM_withConservation.csv')
 im <- initInterMine(mine=listMines()["MaizeMine"])
 transcriptMatrix <- read.csv('data/inputMatrix/formatted_LSTM_metaTab_B73.txt')
 
+
+
 # Define UI
 ui <- fluidPage(
-  tags$head(
-    tags$link(rel = "stylesheet", type = "text/css", href = "static/reelgene.css")
-  ),
   titlePanel("Gene ID Lookup"),
   sidebarLayout(
     sidebarPanel(
       width = 8,
-      textInput("geneID", "Enter Gene ID:", placeholder = "Gene ID"),
+      textInput("geneID", "Enter Gene ID:", placeholder = "Zm Gene ID (e.g. Zm00001eb000020)"),
       actionButton("lookup", "Lookup"),
       # Add tableOutput for gene data
       tableOutput("geneData"),
@@ -59,41 +59,62 @@ ui <- fluidPage(
                  h4("Transcript Names and Scores:"),
                  conditionalPanel(
                    condition = "input.lookup > 0",
-                   withSpinner(tableOutput("transcripts"), color = "gold")
+                   withSpinner(tableOutput("transcripts"), color = "gold"),
+                   p("reelGene scores, split into protein and exon sub-models as well as average model scores. These are in a 0-1 range,
+                   with 0 classified as non-functional and 1 as functional. Conservation levels are based on the exon model and whether 
+                   a gene was mapped to sequence in another taxa at the following levels: outside Zea (found in other Andropogoneae), Zea conserved (found in all Zea), 
+                   Zea segregating (found in some Zea species but not all), and maize specific (found only in maize).
+                   Class is based on the NAM (Hufford 2021) pan-gene classification. Taxa Short is the NAM line that particular gene model pertains to, 
+                   and the Pan-Gene ID is also based on the NAM (Hufford 2021) pan-gene classification.")
                  ),
+                 h4("Comparison of gene model reelGene scores to all other NAM gene models"),
                  conditionalPanel(
                    condition = "input.lookup > 0",
-                   withSpinner(plotOutput("histogramPlot"), color = "gold")
+                   withSpinner(plotOutput("histogramPlot"), color = "gold"),
+                   p("Histogram of all NAM gene models, with selected gene model scores highlighted, using average reelGene scores.")
                  ),
+                 h4("Comparison of reelGene Exon vs reelGene Protein model scores"),
                  conditionalPanel(
                    condition = "input.lookup > 0",
-                   withSpinner(plotOutput("scatterPlot"), color = "gold")
+                   withSpinner(plotOutput("scatterPlot"), color = "gold"),
+                   p("Scores range from 0-1, where we classify 0 as non-functional and 1 as functional. A lower protein score means that the
+                     gene model has less support for the grammar that makes a functional protein, while a lower exon score indicates that
+                     the gene model has poorly annotated junction, exons, or minimal evolutionary support.")
                  ),
+                 h4("Mean vs variance of all gene models within a NAM-classified Pan-Gene"),
                  conditionalPanel(
                    condition = "input.lookup > 0",
-                   withSpinner(plotOutput("meanVarPlot"), color = "gold")
+                   withSpinner(plotOutput("meanVarPlot"), color = "gold"),
+                   p("Gene of interest shown in red, all other pan-gene scores shown in grey.")
                  )
         ),
         tabPanel("Gene Model",
-                 h4("Gene Model"),
+                 h4("Gene Model Scores"),
+                 p("Breakdown of reelGene exon model components for each transcript.
+                     TrslStopScore = Translation Stop Site, TrslStartScore = Translation Start Site,
+                     AcceptorScore = Acceptor Splice Site, DonorScore = Donor Splice Site,
+                     medianPhyloP = the median PhyloP score for that particular feature (leader, coding, intron, terminator).
+                     Names of each feature (ie L001, C001) along the bottom, L = leader, C = coding, I = intron, T = terminator"),
                  conditionalPanel(
                    condition = "input.lookup > 0",
                    withSpinner(plotOutput("geneModelPlot"), color = "gold")
                  )
         ),
         tabPanel("PanGene Data",
-                 h4("PanGene Data:"),
+                 h4("NAM PanGene Data:"),
                  conditionalPanel(
                    condition = "input.lookup > 0",
-                   withSpinner(plotOutput("boxplotPlot"), color = "gold")
+                   withSpinner(plotOutput("boxplotPlot"), color = "gold"),
+                   p("reelGene scores of all gene models within the same PanGene as the gene of interest")
                  ),
+                 h4("MaizeMine PanGene Data:"),
                  conditionalPanel(
                    condition = "input.lookup > 0",
                    withSpinner(tableOutput("panGeneData"), color = "gold")
                  )
         ),
         tabPanel("Expression Data",
-                 h4("Expression Data:"),
+                 h4("MaizeMine Expression Data:"),
                  conditionalPanel(
                    condition = "input.lookup > 0",
                    withSpinner(tableOutput("expressionData"), color = "gold")
@@ -205,8 +226,8 @@ ui <- fluidPage(
             selectInput(
               "seqtype",
               "Sequence Type:",
-              choices = c("Unselected", "cdna", "peptide", "3utr", "5utr", "gene_exon", "transcript_exon",
-                          "transcript_exon_intron", "gene_exon_intron", "coding", "coding_transcript_flank",
+              choices = c("Unselected", "cdna", "peptide", "3utr", "5utr", "gene_exon", "transcript_exon", 
+                          "transcript_exon_intron", "gene_exon_intron", "coding", "coding_transcript_flank", 
                           "coding_gene_flank", "transcript_flank", "gene_flank"),
               selected = "Unselected",
               multiple = FALSE,
@@ -221,7 +242,10 @@ ui <- fluidPage(
             conditionalPanel(
               condition = "input.lookup > 0",
               withSpinner(
-                textOutput("sequence"),
+                tags$div(
+                  style = "max-width: 100%; word-wrap: break-word;",
+                  textOutput("sequence")
+                ),
                 color = "gold"
               )
             )
@@ -252,11 +276,11 @@ ui <- fluidPage(
                      withSpinner(NGLVieweROutput("protein_viewer"), color = "gold")
                    )
                  )
+        )
       )
     )
   )
-),
-tags$footer(paste0("Container: ", if (in_docker) container_name else "?"))
+  #tags$footer(paste0("Container: ", if (docker != "") docker else "?"))
 )
 
 
@@ -684,8 +708,8 @@ server <- function(input, output, session) {
   })
 }
 
-options(shiny.host = if (in_docker) '0.0.0.0' else '127.0.0.1')
-options(shiny.port = 8000)
+# options(shiny.host = if (in_docker) '0.0.0.0' else '127.0.0.1')
+# options(shiny.port = 8000)
 
 # Run the app
 shinyApp(ui, server)
