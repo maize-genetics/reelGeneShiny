@@ -41,6 +41,9 @@ transcriptMatrix <- read.csv('data/inputMatrix/formatted_LSTM_metaTab_B73.txt')
 
 # Define UI
 ui <- fluidPage(
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "static/reelgene.css")
+  ),
   titlePanel("Gene ID Lookup"),
   sidebarLayout(
     sidebarPanel(
@@ -226,8 +229,8 @@ ui <- fluidPage(
             selectInput(
               "seqtype",
               "Sequence Type:",
-              choices = c("Unselected", "cdna", "peptide", "3utr", "5utr", "gene_exon", "transcript_exon", 
-                          "transcript_exon_intron", "gene_exon_intron", "coding", "coding_transcript_flank", 
+              choices = c("Unselected", "cdna", "peptide", "3utr", "5utr", "gene_exon", "transcript_exon",
+                          "transcript_exon_intron", "gene_exon_intron", "coding", "coding_transcript_flank",
                           "coding_gene_flank", "transcript_flank", "gene_flank"),
               selected = "Unselected",
               multiple = FALSE,
@@ -279,8 +282,8 @@ ui <- fluidPage(
         )
       )
     )
-  )
-  #tags$footer(paste0("Container: ", if (docker != "") docker else "?"))
+  ),
+  tags$footer(paste0("Container: ", if (in_docker) container_name else "?"))
 )
 
 
@@ -708,8 +711,8 @@ server <- function(input, output, session) {
   })
 }
 
-# options(shiny.host = if (in_docker) '0.0.0.0' else '127.0.0.1')
-# options(shiny.port = 8000)
+options(shiny.host = if (in_docker) '0.0.0.0' else '127.0.0.1')
+options(shiny.port = 8000)
 
 # Run the app
 shinyApp(ui, server)
